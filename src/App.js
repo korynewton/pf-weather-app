@@ -2,33 +2,32 @@ import React from 'react';
 import axios from 'axios';
 import './App.css';
 import SearchBar from './components/SearchBar/SearchBar';
+import DisplayWeather from './components/DisplayWeather/DisplayWeather';
 class App extends React.Component {
   state = {
     isPolling: false,
     locationName: '',
     latitude: '',
     longitude: '',
-    weatherData: {}
+    weatherData: null
   };
-
-  componentDidMount() {
-    const { isPolling } = this.state;
-    if (isPolling) {
-      this.pollingMechanism = setInterval(() => this.getItems(), 1000 * 60);
-    }
-  }
 
   componentWillUnmount() {
     // clear pollingMechanism when unmounted
     this.pollingMechanism = null;
+    this.setState({ isPolling: false });
   }
 
-  updateData() {
-    console.log('updating data');
-    // todo:
-    // fetch weather at darksky endpoint
-    // update state
-  }
+  startPolling = () => {
+    // retrieve new weather data every minute until component unmounts
+    const { isPolling } = this.state;
+    if (isPolling) {
+      this.pollingMechanism = setInterval(
+        () => this.retrieveWeather(),
+        1000 * 60
+      );
+    }
+  };
 
   coordsFromName = text => {
     // format string sent from search box and search with Google maps API
@@ -89,19 +88,26 @@ class App extends React.Component {
   };
 
   retrieveWeather = () => {
-    const { latitude, longitude } = this.state;
+    console.log('retrieving weather');
+    const { latitude, longitude, isPolling } = this.state;
     const url = `https://pf-dark-sky-proxy.herokuapp.com/api/weather?latitude=${latitude}&longitude=${longitude}`;
     axios
       .get(url)
       .then(res => {
         const { currently, daily } = res.data;
         const weatherData = { currently, daily };
+        console.log(weatherData);
         this.setState({ weatherData });
       })
       .catch(err => console.log(err));
+
+    if (!isPolling) {
+      this.setState({ isPolling: true }, () => this.startPolling());
+    }
   };
 
   render() {
+    const { weatherData, locationName } = this.state;
     return (
       <div>
         <SearchBar coordsFromName={this.coordsFromName} />
@@ -109,6 +115,14 @@ class App extends React.Component {
           Use Current Location
         </button>
         <button onClick={this.retrieveWeather}>Get weather</button>
+        {weatherData ? (
+          <DisplayWeather
+            weatherData={weatherData}
+            locationName={locationName}
+          />
+        ) : (
+          <h1>Enter a Location or choose current location</h1>
+        )}
       </div>
     );
   }
