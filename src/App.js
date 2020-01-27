@@ -87,8 +87,14 @@ class App extends React.Component {
     axios
       .get(url)
       .then(res => {
-        const { address_components } = res.data.results[0];
-        const name = address_components[0].long_name;
+        const address_components = res.data.results;
+        const filtered = address_components.filter(
+          individual =>
+            individual.types.includes('neighborhood') ||
+            individual.types.includes('locality')
+        );
+
+        const name = filtered[0].address_components[0].long_name;
         this.setState({ locationName: name });
       })
       .catch(err => console.log(err));
@@ -103,7 +109,6 @@ class App extends React.Component {
       .then(res => {
         const { currently, daily } = res.data;
         const weatherData = { currently, daily };
-        console.log(weatherData);
         this.setState({ weatherData });
       })
       .catch(err => console.log(err));
