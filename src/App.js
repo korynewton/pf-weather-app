@@ -7,7 +7,8 @@ class App extends React.Component {
     isPolling: false,
     locationName: '',
     latitude: '',
-    longitude: ''
+    longitude: '',
+    weatherData: {}
   };
 
   componentDidMount() {
@@ -87,6 +88,19 @@ class App extends React.Component {
       .catch(err => console.log(err));
   };
 
+  retrieveWeather = () => {
+    const { latitude, longitude } = this.state;
+    const url = `https://pf-dark-sky-proxy.herokuapp.com/api/weather?latitude=${latitude}&longitude=${longitude}`;
+    axios
+      .get(url)
+      .then(res => {
+        const { currently, daily } = res.data;
+        const weatherData = { currently, daily };
+        this.setState({ weatherData });
+      })
+      .catch(err => console.log(err));
+  };
+
   render() {
     return (
       <div>
@@ -94,6 +108,7 @@ class App extends React.Component {
         <button onClick={this.currentLocationCoords}>
           Use Current Location
         </button>
+        <button onClick={this.retrieveWeather}>Get weather</button>
       </div>
     );
   }
