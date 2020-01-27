@@ -49,11 +49,51 @@ class App extends React.Component {
       .catch(err => console.log(err));
   };
 
+  currentLocationCoords = () => {
+    // Retrieves and sets state with the coordinates of users device
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    };
+    if (navigator) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          this.setState(
+            {
+              latitude: coords.latitude,
+              longitude: coords.longitude
+            },
+            this.reverseGeoLocate(coords.latitude, coords.longitude)
+          );
+        },
+        err => console.log(err),
+        options
+      );
+    }
+  };
+
+  reverseGeoLocate = (lat, lng) => {
+    // sets locationName on state afer looking up with coordinates using Google Maps API
+    const { REACT_APP_GOOGLE_API_KEY } = process.env;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${REACT_APP_GOOGLE_API_KEY}`;
+    axios
+      .get(url)
+      .then(res => {
+        const { address_components } = res.data.results[0];
+        const name = address_components[0].long_name;
+        this.setState({ locationName: name });
+      })
+      .catch(err => console.log(err));
+  };
+
   render() {
     return (
       <div>
         <SearchBar coordsFromName={this.coordsFromName} />
-        <button onClick={this.getLatLon}>test</button>
+        <button onClick={this.currentLocationCoords}>
+          Use Current Location
+        </button>
       </div>
     );
   }
