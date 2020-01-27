@@ -47,6 +47,9 @@ class App extends React.Component {
         });
       })
       .catch(err => console.log(err));
+
+    // retrieve weather data and begin polling
+    this.retrieveWeather();
   };
 
   currentLocationCoords = () => {
@@ -64,6 +67,7 @@ class App extends React.Component {
               latitude: coords.latitude,
               longitude: coords.longitude
             },
+            // get location name from coordinates
             this.reverseGeoLocate(coords.latitude, coords.longitude)
           );
         },
@@ -71,6 +75,9 @@ class App extends React.Component {
         options
       );
     }
+
+    // retrieve weather data and begin polling
+    this.retrieveWeather();
   };
 
   reverseGeoLocate = (lat, lng) => {
@@ -109,12 +116,11 @@ class App extends React.Component {
   render() {
     const { weatherData, locationName } = this.state;
     return (
-      <div>
+      <div className="App">
         <SearchBar coordsFromName={this.coordsFromName} />
         <button onClick={this.currentLocationCoords}>
           Use Current Location
         </button>
-        <button onClick={this.retrieveWeather}>Get weather</button>
         {weatherData ? (
           <DisplayWeather
             weatherData={weatherData}
