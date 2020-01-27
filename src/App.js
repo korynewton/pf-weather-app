@@ -117,18 +117,22 @@ class App extends React.Component {
     const { weatherData, locationName } = this.state;
     return (
       <div className="App">
-        <SearchBar coordsFromName={this.coordsFromName} />
-        <button onClick={this.currentLocationCoords}>
-          Use Current Location
-        </button>
-        {weatherData ? (
-          <DisplayWeather
-            weatherData={weatherData}
-            locationName={locationName}
-          />
-        ) : (
-          <h1>Enter a Location or choose current location</h1>
-        )}
+        <div className="locationInput">
+          <SearchBar coordsFromName={this.coordsFromName} />
+          <button onClick={this.currentLocationCoords}>
+            Use Current Location
+          </button>
+        </div>
+        <div className="weatherContainer">
+          {weatherData ? (
+            <DisplayWeather
+              weatherData={weatherData}
+              locationName={locationName}
+            />
+          ) : (
+            <h1>Enter a Location or choose current location</h1>
+          )}
+        </div>
       </div>
     );
   }

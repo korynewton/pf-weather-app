@@ -1,3 +1,50 @@
 .weatherContainer {
-  border: 1px solid red;
+  margin: 10px;
+}
+
+.locationInput {
+  display: flex;
+}
+
+.locationInput button {
+  border: 1px solid black;
+}
+
+.currently {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.currently h3 {
+  font-size: 30px;
+}
+
+.currently h4 {
+  font-size: 25px;
+}
+
+.currently h5 {
+  font-size: 20px;
+}
+
+.sevenDayContainer {
+  margin-top: 10px;
+  margin: 0 auto;
+}
+
+.sevenDayContainer h3 {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.sevenDayForecast {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
+
+.singleDay {
+  margin: 10px;
+  width: 30%;
 }

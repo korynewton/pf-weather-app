@@ -1,4 +1,5 @@
 import React from 'react';
+import './index.css';
 
 class SearchBar extends React.Component {
   constructor(props) {
@@ -22,7 +23,7 @@ class SearchBar extends React.Component {
 
   render() {
     return (
-      <form onSubmit={e => this.onSubmit(e)}>
+      <form className="inputForm" onSubmit={e => this.onSubmit(e)}>
         <label>
           Location Search:
           <input
@@ -32,7 +33,7 @@ class SearchBar extends React.Component {
             name="search"
           />
         </label>
-        <input type="submit" value="Submit" />
+        <input className="btn" type="submit" value="Submit" />
       </form>
     );
   }

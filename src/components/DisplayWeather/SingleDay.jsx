@@ -13,7 +13,7 @@ const SingleDay = ({ day }) => {
   ];
   return (
     <div className="singleDay">
-      <h5>{daysOfWeek[date.getDay()]}</h5>
+      <h5>{daysOfWeek[date.getDay()]}:</h5>
       <h5>{day.summary}</h5>
       <h5>High: {Math.round(day.temperatureHigh)} &deg; F</h5>
       <h5>Low: {Math.round(day.temperatureLow)} &deg; F</h5>

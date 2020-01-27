@@ -1,0 +1,8 @@
+.inputForm {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+input {
+  border: 1px solid black;
+}
