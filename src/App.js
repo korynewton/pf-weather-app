@@ -40,16 +40,17 @@ class App extends React.Component {
       .get(url)
       .then(res => {
         const { formatted_address, geometry } = res.data.results[0];
-        this.setState({
-          locationName: formatted_address,
-          latitude: geometry.location.lat,
-          longitude: geometry.location.lng
-        });
+        this.setState(
+          {
+            locationName: formatted_address,
+            latitude: geometry.location.lat,
+            longitude: geometry.location.lng
+          },
+          // retrieve weather data and begin polling
+          () => this.retrieveWeather()
+        );
       })
       .catch(err => console.log(err));
-
-    // retrieve weather data and begin polling
-    this.retrieveWeather();
   };
 
   currentLocationCoords = () => {
@@ -60,6 +61,7 @@ class App extends React.Component {
       maximumAge: 0
     };
     if (navigator) {
+      console.log('retrieving coords from client');
       navigator.geolocation.getCurrentPosition(
         ({ coords }) => {
           this.setState(
@@ -68,19 +70,17 @@ class App extends React.Component {
               longitude: coords.longitude
             },
             // get location name from coordinates
-            this.reverseGeoLocate(coords.latitude, coords.longitude)
+            () => this.reverseGeoLocate(coords.latitude, coords.longitude)
           );
         },
         err => console.log(err),
         options
       );
     }
-
-    // retrieve weather data and begin polling
-    this.retrieveWeather();
   };
 
   reverseGeoLocate = (lat, lng) => {
+    console.log('reverse geolocate called');
     // sets locationName on state afer looking up with coordinates using Google Maps API
     const { REACT_APP_GOOGLE_API_KEY } = process.env;
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${REACT_APP_GOOGLE_API_KEY}`;
@@ -95,14 +95,19 @@ class App extends React.Component {
         );
 
         const name = filtered[0].address_components[0].long_name;
-        this.setState({ locationName: name });
+        this.setState(
+          { locationName: name },
+          // retrieve weather data and begin polling
+          () => this.retrieveWeather()
+        );
       })
       .catch(err => console.log(err));
   };
 
   retrieveWeather = () => {
-    console.log('retrieving weather');
-    const { latitude, longitude, isPolling } = this.state;
+    console.log('retrieve weather called');
+    const { latitude, longitude, isPolling, locationName } = this.state;
+    console.log(locationName);
     const url = `https://pf-dark-sky-proxy.herokuapp.com/api/weather?latitude=${latitude}&longitude=${longitude}`;
     axios
       .get(url)
@@ -111,11 +116,12 @@ class App extends React.Component {
         const weatherData = { currently, daily };
         this.setState({ weatherData });
       })
+      .then(() => {
+        if (!isPolling) {
+          this.setState({ isPolling: true }, this.startPolling());
+        }
+      })
       .catch(err => console.log(err));
-
-    if (!isPolling) {
-      this.setState({ isPolling: true }, () => this.startPolling());
-    }
   };
 
   render() {
